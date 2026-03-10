@@ -1,50 +1,156 @@
-# Welcome to your Expo app 👋
+Backend Authentication System – Security Implementation
+Project Overview
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This project is a full-stack mood tracking application built with Expo (React Native) and a Node.js/Express backend with MongoDB. The application allows users to securely create accounts, authenticate, and store mood-tracking data.
 
-## Get started
+My primary contribution focused on backend authentication architecture and security mechanisms, including implementing secure credential storage, token-based authentication, and authorization middleware.
 
-1. Install dependencies
+My Role
 
-   ```bash
-   npm install
-   ```
+I contributed to the backend authentication system, focusing on implementing secure login and session management mechanisms. My work involved building the authentication routes, implementing password hashing, and developing middleware to protect API endpoints using JSON Web Tokens (JWT).
 
-2. Start the app
+Key contributions included:
 
-   ```bash
-   npx expo start
-   ```
+Implementing secure user authentication workflows
 
-In the output, you'll find options to open the app in a
+Designing JWT-based session authentication
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Implementing password hashing using bcrypt
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Building Express middleware for token validation
 
-## Get a fresh project
+Structuring backend routes for authentication and protected API access
 
-When you're ready, run:
+Security Features Implemented
+Password Hashing
 
-```bash
-npm run reset-project
-```
+User passwords are never stored in plaintext. Passwords are hashed using the bcrypt hashing algorithm with salting, ensuring that stored credentials remain protected even if the database is compromised.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+const hash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
-## Learn more
+This protects against:
 
-To learn more about developing your project with Expo, look at the following resources:
+credential theft
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+rainbow table attacks
 
-## Join the community
+database leaks
 
-Join our community of developers creating universal apps.
+JSON Web Token (JWT) Authentication
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+After successful login or account creation, the backend issues a signed JSON Web Token (JWT) used for session authentication.
+
+const token = jwt.sign(
+  { userId: user._id },
+  process.env.JWT_SECRET,
+  { expiresIn: "7d" }
+);
+
+This token:
+
+authenticates future requests
+
+prevents repeated credential transmission
+
+allows stateless authentication
+
+Authorization Middleware
+
+To protect backend routes, I implemented an Express middleware function that verifies JWT tokens before allowing access to protected endpoints.
+
+Example logic:
+
+const token = header.split(" ")[1];
+const payload = jwt.verify(token, process.env.JWT_SECRET);
+
+The middleware ensures:
+
+only authenticated users can access protected routes
+
+invalid or expired tokens are rejected
+
+authorization headers are validated before request processing
+
+Input Validation and Credential Checking
+
+The authentication routes validate input fields and enforce credential verification:
+
+ensures email and password fields are provided
+
+prevents duplicate account creation
+
+securely compares password hashes using bcrypt
+
+Example:
+
+const ok = await bcrypt.compare(password, user.passwordHash);
+Authentication Flow
+
+User signs up with email and password
+
+Password is hashed using bcrypt
+
+User credentials are stored securely in MongoDB
+
+A JWT token is generated and returned
+
+Client includes JWT in the Authorization header
+
+Middleware verifies token before allowing protected requests
+
+Technologies Used
+
+Frontend
+
+React Native
+
+Expo
+
+Backend
+
+Node.js
+
+Express.js
+
+Security & Authentication
+
+bcrypt
+
+JSON Web Tokens (JWT)
+
+Database
+
+MongoDB
+
+Security Concepts Demonstrated
+
+This project demonstrates practical implementation of:
+
+Secure password hashing
+
+Token-based authentication
+
+API authorization middleware
+
+Secure credential validation
+
+Stateless authentication systems
+
+Future Security Improvements
+
+Planned security enhancements include:
+
+refresh token implementation
+
+rate limiting for authentication endpoints
+
+account lockout protection
+
+stronger password policy enforcement
+
+centralized logging for authentication events
+
+Attribution
+
+Original project developed collaboratively as part of a university project.
+This repository is a fork highlighting my contributions to the backend authentication and security architecture.
